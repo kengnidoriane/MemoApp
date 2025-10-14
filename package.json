@@ -1,0 +1,46 @@
+{
+  "name": "memo-app",
+  "version": "1.0.0",
+  "description": "A personal knowledge management and learning application with spaced repetition",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "npm run dev --workspace=apps/frontend",
+    "dev:backend": "npm run dev --workspace=apps/backend",
+    "build": "npm run build --workspaces",
+    "build:frontend": "npm run build --workspace=apps/frontend",
+    "build:backend": "npm run build --workspace=apps/backend",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "clean": "npm run clean --workspaces && rm -rf node_modules",
+    "install:all": "npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/memo-app.git"
+  },
+  "keywords": [
+    "memo",
+    "learning",
+    "spaced-repetition",
+    "knowledge-management",
+    "pwa",
+    "react",
+    "typescript",
+    "express"
+  ],
+  "author": "Doriane KENGNI",
+  "license": "MIT"
+}
