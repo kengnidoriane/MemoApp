@@ -62,6 +62,17 @@ export const changePasswordSchema = z.object({
   path: ['newPassword']
 });
 
+// Reset password with token validation
+export const resetPasswordWithTokenSchema = z.object({
+  token: z.string().min(1, 'Reset token is required'),
+  newPassword: passwordSchema
+});
+
+// Email verification validation
+export const verifyEmailSchema = z.object({
+  token: z.string().min(1, 'Verification token is required')
+});
+
 // User preferences validation (standalone)
 export const userPreferencesValidationSchema = userPreferencesSchema;
 
@@ -74,4 +85,6 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+export type ResetPasswordWithTokenInput = z.infer<typeof resetPasswordWithTokenSchema>;
+export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;
 export type UserPreferencesInput = z.infer<typeof userPreferencesSchema>;

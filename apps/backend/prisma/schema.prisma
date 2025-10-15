@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  passwordHash    String    @map("password_hash")
+  name            String?
+  preferences     Json      @default("{}")
+  emailVerified   Boolean   @default(false) @map("email_verified")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  lastLoginAt     DateTime? @map("last_login_at")
+
+  // Relations
+  memos           Memo[]
+  categories      Category[]
+  quizSessions    QuizSession[]
+  notificationSchedules NotificationSchedule[]
+  passwordResetTokens PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+
+  @@map("users")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  color     String   @default("#3B82F6")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  memos     Memo[]
+
+  @@map("categories")
+}
+
+model Memo {
+  id              String    @id @default(uuid())
+  title           String
+  content         String
+  tags            String[]  @default([])
+  categoryId      String?   @map("category_id")
+  userId          String    @map("user_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  lastReviewedAt  DateTime? @map("last_reviewed_at")
+  reviewCount     Int       @default(0) @map("review_count")
+  difficultyLevel Int       @default(3) @map("difficulty_level")
+  easeFactor      Float     @default(2.5) @map("ease_factor")
+  intervalDays    Int       @default(1) @map("interval_days")
+  repetitions     Int       @default(0)
+  nextReviewAt    DateTime? @map("next_review_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category        Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  quizAnswers     QuizAnswer[]
+  notificationSchedules NotificationSchedule[]
+
+  @@map("memos")
+}
+
+model QuizSession {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  startedAt       DateTime  @default(now()) @map("started_at")
+  completedAt     DateTime? @map("completed_at")
+  totalQuestions  Int       @default(0) @map("total_questions")
+  correctAnswers  Int       @default(0) @map("correct_answers")
+  status          String    @default("active")
+
+  // Relations
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizAnswers     QuizAnswer[]
+
+  @@map("quiz_sessions")
+}
+
+model QuizAnswer {
+  id              String    @id @default(uuid())
+  sessionId       String    @map("session_id")
+  memoId          String    @map("memo_id")
+  remembered      Boolean
+  responseTimeMs  Int?      @map("response_time_ms")
+  confidence      Int?
+  answeredAt      DateTime  @default(now()) @map("answered_at")
+
+  // Relations
+  session         QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  memo            Memo        @relation(fields: [memoId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_answers")
+}
+
+model NotificationSchedule {
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  memoId        String    @map("memo_id")
+  scheduledFor  DateTime  @map("scheduled_for")
+  sentAt        DateTime? @map("sent_at")
+  status        String    @default("pending")
+
+  // Relations
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  memo          Memo      @relation(fields: [memoId], references: [id], onDelete: Cascade)
+
+  @@map("notification_schedules")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  token     String    @unique
+  userId    String    @map("user_id")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(uuid())
+  token     String    @unique
+  userId    String    @map("user_id")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("email_verification_tokens")
+}
+
+model BlacklistedToken {
+  id        String   @id @default(uuid())
+  jti       String   @unique // JWT ID
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("blacklisted_tokens")
+}
