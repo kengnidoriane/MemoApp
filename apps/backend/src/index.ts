@@ -14,6 +14,7 @@ import memoRoutes from './routes/memos';
 import categoryRoutes from './routes/categories';
 import reminderRoutes from './routes/reminders';
 import quizRoutes from './routes/quiz';
+import syncRoutes from './routes/sync';
 
 // Load environment variables
 dotenv.config();
@@ -85,6 +86,9 @@ app.use('/api/reminders', reminderRoutes);
 
 // Quiz routes
 app.use('/api/quiz', quizRoutes);
+
+// Sync routes
+app.use('/api/sync', syncRoutes);
 
 // 404 handler
 app.use(notFoundHandler);

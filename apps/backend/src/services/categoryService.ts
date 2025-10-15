@@ -183,6 +183,8 @@ export class CategoryService {
       memoCount: category._count.memos,
       createdAt: category.createdAt,
       updatedAt: category.updatedAt,
+      syncVersion: category.syncVersion,
+      isDeleted: category.isDeleted,
       memos: category.memos
     };
   }
@@ -410,7 +412,9 @@ export class CategoryService {
       userId: category.userId,
       memoCount: memoCount,
       createdAt: category.createdAt,
-      updatedAt: category.updatedAt
+      updatedAt: category.updatedAt,
+      syncVersion: category.syncVersion || 1,
+      isDeleted: category.isDeleted || false
     };
   }
 }

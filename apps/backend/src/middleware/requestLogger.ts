@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
   // Add request ID for tracking
   const requestId = uuidv4();
+  req.id = requestId;
   req.headers['x-request-id'] = requestId;
   res.setHeader('x-request-id', requestId);
 

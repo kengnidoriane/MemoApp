@@ -39,6 +39,8 @@ model Category {
   userId    String   @map("user_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  syncVersion Int    @default(1) @map("sync_version")
+  isDeleted Boolean  @default(false) @map("is_deleted")
 
   // Relations
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -63,6 +65,8 @@ model Memo {
   intervalDays    Int       @default(1) @map("interval_days")
   repetitions     Int       @default(0)
   nextReviewAt    DateTime? @map("next_review_at")
+  syncVersion     Int       @default(1) @map("sync_version")
+  isDeleted       Boolean   @default(false) @map("is_deleted")
 
   // Relations
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -159,4 +163,30 @@ model BlacklistedToken {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("blacklisted_tokens")
+}
+
+model SyncLog {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  entityType      String   @map("entity_type") // 'memo' or 'category'
+  entityId        String   @map("entity_id")
+  operation       String   // 'create', 'update', 'delete'
+  syncVersion     Int      @map("sync_version")
+  timestamp       DateTime @default(now())
+  conflictResolved Boolean @default(false) @map("conflict_resolved")
+
+  @@map("sync_logs")
+}
+
+model OfflineChange {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  entityType String  @map("entity_type") // 'memo' or 'category'
+  entityId  String   @map("entity_id")
+  operation String   // 'create', 'update', 'delete'
+  data      Json
+  timestamp DateTime @default(now())
+  processed Boolean  @default(false)
+
+  @@map("offline_changes")
 }

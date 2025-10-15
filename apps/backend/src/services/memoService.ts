@@ -572,7 +572,9 @@ export class MemoService {
       easeFactor: memo.easeFactor,
       intervalDays: memo.intervalDays,
       repetitions: memo.repetitions,
-      nextReviewAt: memo.nextReviewAt
+      nextReviewAt: memo.nextReviewAt,
+      syncVersion: memo.syncVersion || 1,
+      isDeleted: memo.isDeleted || false
     };
   }
 }

@@ -14,6 +14,8 @@ export interface Memo {
   intervalDays: number;
   repetitions: number;
   nextReviewAt?: Date;
+  syncVersion: number;
+  isDeleted: boolean;
 }
 
 export interface CreateMemoRequest {

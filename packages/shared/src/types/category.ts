@@ -6,6 +6,8 @@ export interface Category {
   memoCount: number;
   createdAt: Date;
   updatedAt: Date;
+  syncVersion: number;
+  isDeleted: boolean;
 }
 
 export interface CreateCategoryRequest {
