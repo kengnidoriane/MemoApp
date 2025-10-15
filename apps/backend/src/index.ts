@@ -12,6 +12,7 @@ import { TokenService } from './services/tokenService';
 import authRoutes from './routes/auth';
 import memoRoutes from './routes/memos';
 import categoryRoutes from './routes/categories';
+import reminderRoutes from './routes/reminders';
 
 // Load environment variables
 dotenv.config();
@@ -77,6 +78,9 @@ app.use('/api/memos', memoRoutes);
 
 // Category routes
 app.use('/api/categories', categoryRoutes);
+
+// Reminder routes
+app.use('/api/reminders', reminderRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
