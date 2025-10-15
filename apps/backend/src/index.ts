@@ -9,12 +9,15 @@ import { checkDatabaseConnection, getDatabaseInfo } from './lib/database';
 import { EmailService } from './services/emailService';
 import { SessionService } from './services/sessionService';
 import { TokenService } from './services/tokenService';
+import { ExportService } from './services/exportService';
 import authRoutes from './routes/auth';
 import memoRoutes from './routes/memos';
 import categoryRoutes from './routes/categories';
 import reminderRoutes from './routes/reminders';
 import quizRoutes from './routes/quiz';
 import syncRoutes from './routes/sync';
+import analyticsRoutes from './routes/analytics';
+import exportRoutes from './routes/export';
 
 // Load environment variables
 dotenv.config();
@@ -90,6 +93,12 @@ app.use('/api/quiz', quizRoutes);
 // Sync routes
 app.use('/api/sync', syncRoutes);
 
+// Analytics routes
+app.use('/api/analytics', analyticsRoutes);
+
+// Export routes
+app.use('/api/export', exportRoutes);
+
 // 404 handler
 app.use(notFoundHandler);
 
@@ -105,6 +114,10 @@ app.listen(PORT, async () => {
   // Initialize email service
   EmailService.initialize();
   console.log('📧 Email service initialized');
+  
+  // Initialize export service
+  await ExportService.initialize();
+  console.log('📁 Export service initialized');
   
   // Check database connection
   const isDbConnected = await checkDatabaseConnection();
@@ -122,12 +135,13 @@ app.listen(PORT, async () => {
  * Start background cleanup jobs
  */
 function startCleanupJobs() {
-  // Clean up expired tokens every hour
+  // Clean up expired tokens and exports every hour
   setInterval(async () => {
     try {
       await Promise.all([
         SessionService.cleanupExpiredBlacklistedTokens(),
         TokenService.cleanupExpiredTokens(),
+        ExportService.cleanupExpiredExports(),
       ]);
       console.log('🧹 Cleanup job completed');
     } catch (error) {

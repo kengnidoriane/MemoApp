@@ -15,3 +15,6 @@ export * from './api';
 
 // Notification types
 export * from './notification';
+
+// Analytics types
+export * from './analytics';
