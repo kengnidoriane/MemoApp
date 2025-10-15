@@ -13,6 +13,7 @@ import authRoutes from './routes/auth';
 import memoRoutes from './routes/memos';
 import categoryRoutes from './routes/categories';
 import reminderRoutes from './routes/reminders';
+import quizRoutes from './routes/quiz';
 
 // Load environment variables
 dotenv.config();
@@ -81,6 +82,9 @@ app.use('/api/categories', categoryRoutes);
 
 // Reminder routes
 app.use('/api/reminders', reminderRoutes);
+
+// Quiz routes
+app.use('/api/quiz', quizRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
