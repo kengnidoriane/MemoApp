@@ -13,6 +13,8 @@ export interface MemoSearchParams extends PaginationParams {
   tags?: string[];
   dateFrom?: string;
   dateTo?: string;
+  sortBy?: 'createdAt' | 'updatedAt' | 'title' | 'nextReviewAt';
+  sortOrder?: 'asc' | 'desc';
   [key: string]: unknown; // Index signature for compatibility
 }
 

@@ -9,6 +9,7 @@ import { NetworkStatus } from './components/NetworkStatus';
 import { PWAUpdateNotification } from './components/PWAUpdateNotification';
 import { AuthLayout, ProtectedRoute } from './components/auth';
 import { SettingsPage } from './components/profile';
+import { MemoPage } from './components/memos';
 import { setupNetworkMonitoring } from './lib/api';
 import { syncManager } from './lib/syncManager';
 import { pwaManager } from './lib/pwaManager';
@@ -83,10 +84,21 @@ const DashboardPage = () => (
       className="min-h-screen bg-gray-50 dark:bg-gray-900"
     >
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Dashboard functionality will be implemented in the next tasks
-        </p>
+        <MemoPage />
+      </div>
+    </motion.div>
+  </ProtectedRoute>
+);
+
+const MemosPage = () => (
+  <ProtectedRoute>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-gray-50 dark:bg-gray-900"
+    >
+      <div className="container mx-auto px-4 py-8">
+        <MemoPage />
       </div>
     </motion.div>
   </ProtectedRoute>
@@ -159,6 +171,7 @@ const App = () => {
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<LoginPage />} />
                   <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/memos" element={<MemosPage />} />
                   <Route 
                     path="/settings" 
                     element={

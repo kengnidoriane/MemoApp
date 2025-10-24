@@ -2,18 +2,20 @@ import { type HTMLAttributes } from 'react';
 import { cn } from '../../utils';
 
 interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'className'> {
-  variant?: 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info';
+  variant?: 'default' | 'primary' | 'secondary' | 'outline' | 'success' | 'warning' | 'error' | 'info';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
 const badgeVariants = {
   default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-  primary: 'bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-300',
-  success: 'bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-300',
-  warning: 'bg-warning-100 text-warning-800 dark:bg-warning-900 dark:text-warning-300',
-  error: 'bg-error-100 text-error-800 dark:bg-error-900 dark:text-error-300',
-  info: 'bg-info-100 text-info-800 dark:bg-info-900 dark:text-info-300',
+  primary: 'bg-primary-600 text-white dark:bg-primary-500',
+  secondary: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+  outline: 'border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300',
+  success: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+  warning: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300',
+  error: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+  info: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
 };
 
 const badgeSizes = {

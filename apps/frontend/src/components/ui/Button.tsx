@@ -3,9 +3,10 @@ import { motion, type HTMLMotionProps } from 'framer-motion';
 import { cn } from '../../utils';
 
 interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'destructive';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
+  loading?: boolean; // Alias for isLoading
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   className?: string;
@@ -18,6 +19,7 @@ const buttonVariants = {
   outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700',
   ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-gray-500 dark:text-gray-300 dark:hover:bg-gray-800',
   danger: 'bg-error-600 text-white hover:bg-error-700 focus:ring-error-500 shadow-sm',
+  destructive: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm',
 };
 
 const buttonSizes = {
@@ -32,6 +34,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       variant = 'primary',
       size = 'md',
       isLoading = false,
+      loading = false,
       leftIcon,
       rightIcon,
       children,
@@ -42,7 +45,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const isDisabled = disabled || isLoading;
+    const actualLoading = isLoading || loading;
+    const isDisabled = disabled || actualLoading;
 
     return (
       <motion.button
@@ -64,7 +68,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...motionProps}
         {...props}
       >
-        {isLoading && (
+        {actualLoading && (
           <svg
             className={cn('animate-spin -ml-1 mr-2 h-4 w-4')}
             xmlns="http://www.w3.org/2000/svg"
@@ -87,13 +91,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           </svg>
         )}
         
-        {!isLoading && leftIcon && (
+        {!actualLoading && leftIcon && (
           <span className={cn('mr-2', children ? '' : 'mr-0')}>{leftIcon}</span>
         )}
         
         {children}
         
-        {!isLoading && rightIcon && (
+        {!actualLoading && rightIcon && (
           <span className={cn('ml-2', children ? '' : 'ml-0')}>{rightIcon}</span>
         )}
       </motion.button>
