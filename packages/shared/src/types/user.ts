@@ -8,6 +8,8 @@ export interface User {
   emailVerified: boolean;
 }
 
+import type { ReminderFrequency } from '../constants/notifications';
+
 export interface UserPreferences {
   theme: 'light' | 'dark';
   language: 'en' | 'fr';
@@ -15,9 +17,6 @@ export interface UserPreferences {
   notificationsEnabled: boolean;
   fontSize: 'small' | 'medium' | 'large';
 }
-
-// ReminderFrequency is imported from constants
-import { ReminderFrequency } from '../constants/notifications';
 
 export interface AuthResult {
   user: User;

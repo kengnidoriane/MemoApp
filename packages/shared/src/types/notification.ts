@@ -20,8 +20,7 @@ export interface NotificationPreferences {
   vibrationEnabled: boolean;
 }
 
-// NotificationType is imported from constants
-import { NotificationType } from '../constants/notifications';
+import type { NotificationType, ReminderFrequency } from '../constants/notifications';
 
 export interface NotificationSchedule {
   id: string;
@@ -41,6 +40,3 @@ export interface ReminderSettings {
   maxRemindersPerDay: number;
   respectQuietHours: boolean;
 }
-
-// ReminderFrequency is imported from constants
-import { ReminderFrequency } from '../constants/notifications';

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { QueryProvider } from './providers/QueryProvider';
 import { ToastProvider } from './providers/ToastProvider';
@@ -7,11 +7,13 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { QueryErrorBoundary } from './components/QueryErrorBoundary';
 import { NetworkStatus } from './components/NetworkStatus';
 import { PWAUpdateNotification } from './components/PWAUpdateNotification';
+import { AuthLayout, ProtectedRoute } from './components/auth';
+import { SettingsPage } from './components/profile';
 import { setupNetworkMonitoring } from './lib/api';
 import { syncManager } from './lib/syncManager';
 import { pwaManager } from './lib/pwaManager';
 import { indexedDBManager } from './lib/indexedDB';
-import { useAppStore, useSyncStore } from './stores';
+import { useAppStore, useSyncStore, useAuthStore } from './stores';
 
 // Placeholder components for initial setup
 const HomePage = () => (
@@ -57,34 +59,37 @@ const HomePage = () => (
   </motion.div>
 );
 
-const LoginPage = () => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900"
-  >
-    <div className="card p-8 w-full max-w-md">
-      <h2 className="text-2xl font-bold text-center mb-6">Sign In</h2>
-      <p className="text-center text-gray-600 dark:text-gray-400">
-        Login functionality will be implemented in the next tasks
-      </p>
-    </div>
-  </motion.div>
-);
+const LoginPage = () => {
+  const { isAuthenticated } = useAuthStore();
+  
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return (
+    <AuthLayout 
+      onSuccess={() => {
+        // Navigation will be handled by the auth state change
+      }}
+    />
+  );
+};
 
 const DashboardPage = () => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    className="min-h-screen bg-gray-50 dark:bg-gray-900"
-  >
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-      <p className="text-gray-600 dark:text-gray-400">
-        Dashboard functionality will be implemented in the next tasks
-      </p>
-    </div>
-  </motion.div>
+  <ProtectedRoute>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-gray-50 dark:bg-gray-900"
+    >
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+        <p className="text-gray-600 dark:text-gray-400">
+          Dashboard functionality will be implemented in the next tasks
+        </p>
+      </div>
+    </motion.div>
+  </ProtectedRoute>
 );
 
 const App = () => {
@@ -152,7 +157,16 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<LoginPage />} />
                   <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route 
+                    path="/settings" 
+                    element={
+                      <ProtectedRoute>
+                        <SettingsPage />
+                      </ProtectedRoute>
+                    } 
+                  />
                 </Routes>
               </div>
             </Router>
