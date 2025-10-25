@@ -4,6 +4,7 @@ import { formatDistanceToNow } from 'date-fns';
 import type { Memo } from '@memo-app/shared/types';
 import { Card, Badge, Button } from '../ui';
 import { useCategories } from '../../hooks/useCategories';
+import { useResponsive, useTouch } from '../../hooks';
 import { highlightSearchTerm } from './SearchResults';
 import { cn } from '../../utils';
 
@@ -28,6 +29,8 @@ export const MemoCard = ({
 }: MemoCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const { data: categories = [] } = useCategories();
+  const { isMobile } = useResponsive();
+  const isTouch = useTouch();
   
   const category = categories.find(cat => cat.id === memo.categoryId);
   
@@ -94,7 +97,7 @@ export const MemoCard = ({
         {showActions && (
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: isHovered ? 1 : 0 }}
+            animate={{ opacity: (isHovered || isMobile || isTouch) ? 1 : 0 }}
             transition={{ duration: 0.2 }}
             className="flex items-center space-x-1 ml-2"
           >
@@ -104,10 +107,13 @@ export const MemoCard = ({
                 size="sm"
                 onClick={handleEdit}
                 data-action-button
-                className="p-1.5"
+                className={cn(
+                  'p-1.5',
+                  (isMobile || isTouch) && 'min-h-touch min-w-touch p-3'
+                )}
                 aria-label="Edit memo"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={cn('w-4 h-4', (isMobile || isTouch) && 'w-5 h-5')} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
               </Button>
@@ -119,10 +125,13 @@ export const MemoCard = ({
                 size="sm"
                 onClick={handleDelete}
                 data-action-button
-                className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
+                className={cn(
+                  'p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20',
+                  (isMobile || isTouch) && 'min-h-touch min-w-touch p-3'
+                )}
                 aria-label="Delete memo"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={cn('w-4 h-4', (isMobile || isTouch) && 'w-5 h-5')} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
               </Button>
@@ -139,17 +148,20 @@ export const MemoCard = ({
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between">
+      <div className={cn(
+        'flex items-center justify-between',
+        isMobile && 'flex-col items-start space-y-2'
+      )}>
         {/* Tags */}
         <div className="flex flex-wrap gap-1">
-          {memo.tags.slice(0, 3).map((tag) => (
+          {memo.tags.slice(0, isMobile ? 2 : 3).map((tag) => (
             <Badge key={tag} variant="secondary" className="text-xs">
               {tag}
             </Badge>
           ))}
-          {memo.tags.length > 3 && (
+          {memo.tags.length > (isMobile ? 2 : 3) && (
             <Badge variant="secondary" className="text-xs">
-              +{memo.tags.length - 3} more
+              +{memo.tags.length - (isMobile ? 2 : 3)} more
             </Badge>
           )}
         </div>

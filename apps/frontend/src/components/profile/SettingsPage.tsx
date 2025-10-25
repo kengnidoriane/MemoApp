@@ -3,6 +3,8 @@ import { ProfileForm } from './ProfileForm';
 import { ThemeSettings } from './ThemeSettings';
 import { LanguageSettings } from './LanguageSettings';
 import { NotificationSettings } from './NotificationSettings';
+import { AccessibilitySettings } from '../accessibility/AccessibilitySettings';
+import { Container } from '../layout/Container';
 import { cn } from '../../utils';
 
 interface SettingsPageProps {
@@ -11,8 +13,8 @@ interface SettingsPageProps {
 
 export const SettingsPage = ({ className }: SettingsPageProps) => {
   return (
-    <div className={cn('min-h-screen bg-gray-50 dark:bg-gray-900', className)}>
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className={cn(className)}>
+      <Container size="md" className="py-6 sm:py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -65,8 +67,17 @@ export const SettingsPage = ({ className }: SettingsPageProps) => {
           >
             <NotificationSettings />
           </motion.div>
+
+          {/* Accessibility Settings */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.5 }}
+          >
+            <AccessibilitySettings />
+          </motion.div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 };

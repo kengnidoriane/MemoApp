@@ -5,6 +5,11 @@ interface ThemeConfig {
   mode: 'light' | 'dark';
   primaryColor: string;
   fontSize: 'small' | 'medium' | 'large';
+  highContrast?: boolean;
+  reduceMotion?: boolean;
+  screenReaderOptimized?: boolean;
+  keyboardNavigation?: boolean;
+  focusIndicators?: boolean;
 }
 
 interface AppState {

@@ -44,7 +44,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <div className="relative">
           {leftIcon && (
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="text-gray-400 dark:text-gray-500">{leftIcon}</span>
+              <span className="text-gray-400 dark:text-gray-500" aria-hidden="true">
+                {leftIcon}
+              </span>
             </div>
           )}
           
@@ -72,19 +74,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               'dark:disabled:bg-gray-800 dark:disabled:text-gray-400',
               className
             )}
+            aria-invalid={hasError}
+            aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-help` : undefined}
             whileFocus={{ scale: 1.01 }}
             {...props}
           />
           
           {rightIcon && (
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-400 dark:text-gray-500">{rightIcon}</span>
+              <span className="text-gray-400 dark:text-gray-500" aria-hidden="true">
+                {rightIcon}
+              </span>
             </div>
           )}
         </div>
         
         {(error || helperText) && (
           <motion.p
+            id={error ? `${inputId}-error` : `${inputId}-help`}
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             className={cn(
@@ -93,6 +100,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 ? 'text-error-600 dark:text-error-400'
                 : 'text-gray-500 dark:text-gray-400'
             )}
+            role={hasError ? 'alert' : undefined}
+            aria-live={hasError ? 'polite' : undefined}
           >
             {error || helperText}
           </motion.p>

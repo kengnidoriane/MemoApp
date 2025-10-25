@@ -15,6 +15,9 @@ import { MemoPage } from './components/memos';
 import { QuizPage } from './components/quiz';
 import { RemindersPage } from './components/reminders';
 import { AnalyticsPage } from './components/analytics';
+import { Layout, Container } from './components/layout';
+import { SkipLinks, LiveRegion, useKeyboardShortcuts } from './components/accessibility';
+import { useAccessibility, useSkipLinks } from './hooks/useAccessibility';
 import { setupNetworkMonitoring } from './lib/api';
 import { syncManager } from './lib/syncManager';
 import { pwaManager } from './lib/pwaManager';
@@ -83,41 +86,50 @@ const LoginPage = () => {
 
 const DashboardPage = () => (
   <ProtectedRoute>
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-gray-50 dark:bg-gray-900"
-    >
-      <div className="container mx-auto px-4 py-8">
-        <MemoPage />
-      </div>
-    </motion.div>
+    <Layout>
+      <Container className="py-6 sm:py-8">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <MemoPage />
+        </motion.div>
+      </Container>
+    </Layout>
   </ProtectedRoute>
 );
 
 const MemosPage = () => (
   <ProtectedRoute>
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-gray-50 dark:bg-gray-900"
-    >
-      <div className="container mx-auto px-4 py-8">
-        <MemoPage />
-      </div>
-    </motion.div>
+    <Layout>
+      <Container className="py-6 sm:py-8">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <MemoPage />
+        </motion.div>
+      </Container>
+    </Layout>
   </ProtectedRoute>
 );
 
 const QuizPageRoute = () => (
   <ProtectedRoute>
-    <QuizPage />
+    <Layout>
+      <QuizPage />
+    </Layout>
   </ProtectedRoute>
 );
 
 const App = () => {
   const { setOnlineStatus } = useAppStore();
   const { setOnlineStatus: setSyncOnlineStatus } = useSyncStore();
+  
+  // Initialize accessibility features
+  const { announceToScreenReader } = useAccessibility();
+  const { KeyboardShortcutsModal, showShortcuts } = useKeyboardShortcuts();
+  useSkipLinks();
 
   useEffect(() => {
     // Initialize PWA
@@ -154,10 +166,21 @@ const App = () => {
     // Listen for back online event to trigger sync
     const handleBackOnline = () => {
       console.log('App is back online, triggering sync...');
+      announceToScreenReader('Connection restored. Syncing data...');
       syncManager.syncData().catch(console.error);
     };
     
     window.addEventListener('app:back-online', handleBackOnline);
+    
+    // Global keyboard shortcuts
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '?' && e.shiftKey) {
+        e.preventDefault();
+        showShortcuts();
+      }
+    };
+    
+    document.addEventListener('keydown', handleGlobalKeyDown);
     
     return () => {
       cleanup();
@@ -165,6 +188,7 @@ const App = () => {
       window.removeEventListener('online', handleOnlineStatusChange);
       window.removeEventListener('offline', handleOnlineStatusChange);
       window.removeEventListener('app:back-online', handleBackOnline);
+      document.removeEventListener('keydown', handleGlobalKeyDown);
     };
   }, [setOnlineStatus, setSyncOnlineStatus]);
 
@@ -176,10 +200,14 @@ const App = () => {
             <QueryErrorBoundary>
               <Router>
                 <div className="App">
+                  <SkipLinks />
+                  <LiveRegion />
                   <NetworkStatus />
                   <PWAUpdateNotification />
                   <NotificationHandler />
-                  <Routes>
+                  <KeyboardShortcutsModal />
+                  <main id="main-content" tabIndex={-1}>
+                    <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<LoginPage />} />
@@ -190,7 +218,9 @@ const App = () => {
                     path="/settings" 
                     element={
                       <ProtectedRoute>
-                        <SettingsPage />
+                        <Layout>
+                          <SettingsPage />
+                        </Layout>
                       </ProtectedRoute>
                     } 
                   />
@@ -198,7 +228,11 @@ const App = () => {
                     path="/reminders" 
                     element={
                       <ProtectedRoute>
-                        <RemindersPage />
+                        <Layout>
+                          <Container className="py-6 sm:py-8">
+                            <RemindersPage />
+                          </Container>
+                        </Layout>
                       </ProtectedRoute>
                     } 
                   />
@@ -206,11 +240,16 @@ const App = () => {
                     path="/analytics" 
                     element={
                       <ProtectedRoute>
-                        <AnalyticsPage />
+                        <Layout>
+                          <Container className="py-6 sm:py-8">
+                            <AnalyticsPage />
+                          </Container>
+                        </Layout>
                       </ProtectedRoute>
                     } 
                   />
-                </Routes>
+                    </Routes>
+                  </main>
                 </div>
               </Router>
             </QueryErrorBoundary>

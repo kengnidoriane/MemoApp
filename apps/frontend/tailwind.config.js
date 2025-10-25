@@ -5,6 +5,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    screens: {
+      'xs': '475px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
+    },
     extend: {
       colors: {
         // Primary Colors (Learning & Focus)
@@ -87,6 +95,16 @@ export default {
       spacing: {
         '18': '4.5rem',   // 72px
         '88': '22rem',    // 352px
+        'safe-top': 'env(safe-area-inset-top)',
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+        'safe-left': 'env(safe-area-inset-left)',
+        'safe-right': 'env(safe-area-inset-right)',
+      },
+      minHeight: {
+        'touch': '44px',  // Minimum touch target size
+      },
+      minWidth: {
+        'touch': '44px',  // Minimum touch target size
       },
       animation: {
         'fade-in': 'fadeIn 0.2s ease-in-out',

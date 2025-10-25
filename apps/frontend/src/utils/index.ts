@@ -73,3 +73,6 @@ export const getRandomColor = (): string => {
   ];
   return colors[Math.floor(Math.random() * colors.length)];
 };
+
+// Export responsive utilities
+export * from './responsive';

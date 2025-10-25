@@ -10,3 +10,5 @@ export * from './useOffline';
 export * from './usePWA';
 export * from './useOfflineMemos';
 export * from './useOfflineCategories';
+export * from './useResponsive';
+export * from './useAccessibility';
