@@ -329,4 +329,28 @@ router.post('/revoke-other-sessions',
   }
 );
 
+/**
+ * DELETE /auth/delete-account
+ * Permanently delete user account and all associated data (GDPR compliance)
+ */
+router.delete('/delete-account',
+  authenticateToken,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.user) {
+        throw createApiError('User not authenticated', 401, ErrorCode.AUTHENTICATION_ERROR);
+      }
+
+      await AuthService.deleteAccount(req.user.id);
+
+      res.json({
+        success: true,
+        message: 'Account and all associated data have been permanently deleted.',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default router;

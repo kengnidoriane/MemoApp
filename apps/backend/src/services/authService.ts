@@ -450,4 +450,72 @@ export class AuthService {
       throw createApiError('Failed to revoke other sessions', 500, ErrorCode.INTERNAL_SERVER_ERROR);
     }
   }
+
+  /**
+   * Permanently delete user account and all associated data (GDPR compliance)
+   */
+  static async deleteAccount(userId: string): Promise<void> {
+    try {
+      // Start a transaction to ensure all data is deleted atomically
+      await prisma.$transaction(async (tx) => {
+        // Delete all user-related data in the correct order (respecting foreign key constraints)
+        
+        // 1. Delete quiz answers (references quiz sessions and memos)
+        await tx.quizAnswer.deleteMany({
+          where: { 
+            session: { userId } 
+          }
+        });
+
+        // 2. Delete quiz sessions
+        await tx.quizSession.deleteMany({
+          where: { userId }
+        });
+
+        // 3. Delete notification schedules
+        await tx.notificationSchedule.deleteMany({
+          where: { userId }
+        });
+
+        // 4. Delete memos (this will cascade to related data)
+        await tx.memo.deleteMany({
+          where: { userId }
+        });
+
+        // 5. Delete categories
+        await tx.category.deleteMany({
+          where: { userId }
+        });
+
+        // 6. Delete blacklisted tokens
+        await tx.blacklistedToken.deleteMany({
+          where: { userId }
+        });
+
+        // 7. Delete password reset tokens
+        await tx.passwordResetToken.deleteMany({
+          where: { userId }
+        });
+
+        // 8. Delete email verification tokens
+        await tx.emailVerificationToken.deleteMany({
+          where: { userId }
+        });
+
+        // 9. Finally, delete the user account
+        await tx.user.delete({
+          where: { id: userId }
+        });
+      });
+
+      console.log(`User account ${userId} and all associated data have been permanently deleted`);
+    } catch (error) {
+      console.error('Error deleting user account:', error);
+      throw createApiError(
+        'Failed to delete account. Please try again or contact support.',
+        500,
+        ErrorCode.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 }
