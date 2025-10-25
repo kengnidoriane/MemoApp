@@ -64,6 +64,6 @@ export const authService = {
   },
 
   deleteAccount: async (): Promise<void> => {
-    await api.delete('/users/profile');
+    await api.delete('/auth/delete-account');
   },
 };
