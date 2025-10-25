@@ -7,9 +7,13 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { QueryErrorBoundary } from './components/QueryErrorBoundary';
 import { NetworkStatus } from './components/NetworkStatus';
 import { PWAUpdateNotification } from './components/PWAUpdateNotification';
+import { NotificationHandler } from './components/reminders';
 import { AuthLayout, ProtectedRoute } from './components/auth';
 import { SettingsPage } from './components/profile';
 import { MemoPage } from './components/memos';
+import { QuizPage } from './components/quiz';
+import { RemindersPage } from './components/reminders';
+import { AnalyticsPage } from './components/analytics';
 import { setupNetworkMonitoring } from './lib/api';
 import { syncManager } from './lib/syncManager';
 import { pwaManager } from './lib/pwaManager';
@@ -104,6 +108,12 @@ const MemosPage = () => (
   </ProtectedRoute>
 );
 
+const QuizPageRoute = () => (
+  <ProtectedRoute>
+    <QuizPage />
+  </ProtectedRoute>
+);
+
 const App = () => {
   const { setOnlineStatus } = useAppStore();
   const { setOnlineStatus: setSyncOnlineStatus } = useSyncStore();
@@ -166,17 +176,35 @@ const App = () => {
               <div className="App">
                 <NetworkStatus />
                 <PWAUpdateNotification />
+                <NotificationHandler />
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<LoginPage />} />
                   <Route path="/dashboard" element={<DashboardPage />} />
                   <Route path="/memos" element={<MemosPage />} />
+                  <Route path="/quiz" element={<QuizPageRoute />} />
                   <Route 
                     path="/settings" 
                     element={
                       <ProtectedRoute>
                         <SettingsPage />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/reminders" 
+                    element={
+                      <ProtectedRoute>
+                        <RemindersPage />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/analytics" 
+                    element={
+                      <ProtectedRoute>
+                        <AnalyticsPage />
                       </ProtectedRoute>
                     } 
                   />
