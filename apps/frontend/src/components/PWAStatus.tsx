@@ -7,7 +7,7 @@ import { Badge } from './ui/Badge';
 import { Button } from './ui/Button';
 
 export const PWAStatus = () => {
-  const { isOnline, isOffline } = useOffline();
+  const { isOnline } = useOffline();
   const { needRefresh, offlineReady, updateApp, requestPersistentStorage, getStorageEstimate } = usePWA();
   const [storageInfo, setStorageInfo] = useState<{ quota?: number; usage?: number; persistent?: boolean }>({});
   const [dbStatus, setDbStatus] = useState<'loading' | 'ready' | 'error'>('loading');

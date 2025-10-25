@@ -18,7 +18,7 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from '../../hooks/useCategories';
-import { useMemos } from '../../hooks/useMemos';
+// import { useMemos } from '../../hooks/useMemos';
 import type { Category } from '@memo-app/shared/types';
 import { CategoryForm } from './CategoryForm';
 import { CategoryCard } from './CategoryCard';
@@ -52,7 +52,7 @@ export const CategoryManager = ({
   const [localCategories, setLocalCategories] = useState<Category[]>([]);
 
   const { data: categories = [], isLoading, error } = useCategories();
-  const { updateMemoCategory } = useMemos();
+  // const { updateMemoCategory } = useMemos();
   const createCategoryMutation = useCreateCategory();
   const updateCategoryMutation = useUpdateCategory();
   const deleteCategoryMutation = useDeleteCategory();
@@ -168,8 +168,8 @@ export const CategoryManager = ({
       }
     } else if (enableDragAndDrop) {
       // Move memo to different category (if implementing memo drag and drop)
-      const targetCategoryId = over.id as string;
-      const memoId = active.id as string;
+      // const targetCategoryId = over.id as string;
+      // const memoId = active.id as string;
       
       // This would be implemented when adding memo drag and drop functionality
       // updateMemoCategory.mutate({ memoId, categoryId: targetCategoryId });

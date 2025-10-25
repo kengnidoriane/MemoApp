@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { analyticsService, type ExportOptions } from '../services/analyticsService';
+import { analyticsService } from '../services/analyticsService';
 
 // Query keys
 export const analyticsKeys = {

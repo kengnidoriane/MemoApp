@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { formatDistanceToNow, format } from 'date-fns';
 import type { Memo } from '@memo-app/shared/types';
 import { Card, Badge, Button } from '../ui';

@@ -8,3 +8,5 @@ export * from './useAnalytics';
 export * from './useNotifications';
 export * from './useOffline';
 export * from './usePWA';
+export * from './useOfflineMemos';
+export * from './useOfflineCategories';

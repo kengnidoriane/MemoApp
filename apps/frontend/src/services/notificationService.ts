@@ -1,8 +1,8 @@
 import { api } from '../lib/api';
 import type { 
-  NotificationPreferences,
-  PushSubscription 
+  NotificationPreferences
 } from '@memo-app/shared/types';
+// import type { ReminderFrequency } from '@memo-app/shared/constants';
 
 export const notificationService = {
   // Push notification subscription
@@ -16,13 +16,26 @@ export const notificationService = {
 
   // Notification preferences
   getNotificationPreferences: async (): Promise<NotificationPreferences> => {
-    const response = await api.get<NotificationPreferences>('/notifications/preferences');
-    return response.data;
+    const response = await api.get<{ data: NotificationPreferences }>('/notifications/preferences');
+    return response.data?.data || {
+      enabled: false,
+      reminderFrequency: '1day' as const,
+      allowedTypes: [],
+      soundEnabled: true,
+      vibrationEnabled: true
+    };
   },
 
   updateNotificationPreferences: async (preferences: Partial<NotificationPreferences>): Promise<NotificationPreferences> => {
-    const response = await api.put<NotificationPreferences>('/notifications/preferences', preferences);
-    return response.data;
+    const response = await api.put<{ data: NotificationPreferences }>('/notifications/preferences', preferences);
+    return response.data?.data || {
+      enabled: false,
+      reminderFrequency: '1day' as const,
+      allowedTypes: [],
+      soundEnabled: true,
+      vibrationEnabled: true,
+      ...preferences
+    };
   },
 
   // Test notifications
@@ -37,8 +50,13 @@ export const notificationService = {
     scheduledFor: Date;
     type: string;
   }>> => {
-    const response = await api.get('/reminders/upcoming');
-    return response.data;
+    const response = await api.get<{ data: Array<{
+      id: string;
+      memoId: string;
+      scheduledFor: Date;
+      type: string;
+    }> }>('/reminders/upcoming');
+    return response.data?.data || [];
   },
 
   snoozeReminder: async (reminderId: string, snoozeMinutes: number): Promise<void> => {

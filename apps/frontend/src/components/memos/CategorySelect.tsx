@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCategories } from '../../hooks/useCategories';
-import { Badge } from '../ui';
+// import { Badge } from '../ui';
 import { cn } from '../../utils';
 
 interface CategorySelectProps {

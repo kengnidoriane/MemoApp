@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { motion } from 'framer-motion';
 import { QueryProvider } from './providers/QueryProvider';
 import { ToastProvider } from './providers/ToastProvider';
+import { SyncProvider } from './providers/SyncProvider';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { QueryErrorBoundary } from './components/QueryErrorBoundary';
 import { NetworkStatus } from './components/NetworkStatus';
@@ -171,13 +172,14 @@ const App = () => {
     <ErrorBoundary>
       <QueryProvider>
         <ToastProvider>
-          <QueryErrorBoundary>
-            <Router>
-              <div className="App">
-                <NetworkStatus />
-                <PWAUpdateNotification />
-                <NotificationHandler />
-                <Routes>
+          <SyncProvider>
+            <QueryErrorBoundary>
+              <Router>
+                <div className="App">
+                  <NetworkStatus />
+                  <PWAUpdateNotification />
+                  <NotificationHandler />
+                  <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<LoginPage />} />
@@ -209,9 +211,10 @@ const App = () => {
                     } 
                   />
                 </Routes>
-              </div>
-            </Router>
-          </QueryErrorBoundary>
+                </div>
+              </Router>
+            </QueryErrorBoundary>
+          </SyncProvider>
         </ToastProvider>
       </QueryProvider>
     </ErrorBoundary>

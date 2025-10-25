@@ -1,10 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { quizService } from '../services/quizService';
 import type { 
-  QuizSession, 
-  QuizQuestion, 
-  QuizAnswer, 
-  QuizOptions 
+  QuizAnswer
 } from '@memo-app/shared/types';
 
 // Query keys
@@ -73,7 +70,7 @@ export const useEndQuizSession = () => {
 
   return useMutation({
     mutationFn: quizService.endQuizSession,
-    onSuccess: (results, sessionId) => {
+    onSuccess: (_, sessionId) => {
       // Remove session from cache
       queryClient.removeQueries({ queryKey: quizKeys.session(sessionId) });
       

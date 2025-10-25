@@ -26,7 +26,7 @@ export const TagInput = ({
   showPopularTags = true,
   disabled = false,
   autoFocus = false,
-  showTagCount = true,
+  // showTagCount = true,
   allowCustomTags = true,
 }: TagInputProps) => {
   const [inputValue, setInputValue] = useState('');
@@ -35,7 +35,7 @@ export const TagInput = ({
   const [isAnimating, setIsAnimating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  // const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { data: suggestions = [], isLoading } = useTagSuggestions(
     inputValue.length > 0 ? inputValue : undefined

@@ -38,6 +38,15 @@ interface MemoActions {
   setError: (error: string | null) => void;
   setSyncStatus: (status: 'idle' | 'syncing' | 'error') => void;
   setLastSyncAt: (date: Date) => void;
+  // Offline-aware actions
+  loadMemosFromStorage: () => Promise<void>;
+  loadCategoriesFromStorage: () => Promise<void>;
+  getSyncStatusInfo: () => Promise<{
+    memosPending: number;
+    categoriesPending: number;
+    memosConflicts: number;
+    categoriesConflicts: number;
+  }>;
 }
 
 type MemoStore = MemoState & MemoActions;
@@ -141,5 +150,70 @@ export const useMemoStore = create<MemoStore>((set, get) => ({
   
   setLastSyncAt: (date) => {
     set({ lastSyncAt: date });
+  },
+
+  // Offline-aware actions
+  loadMemosFromStorage: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      
+      // Import here to avoid circular dependencies
+      const { offlineMemoService } = await import('../services/offlineMemoService');
+      const memos = await offlineMemoService.getMemos();
+      
+      set({ memos, isLoading: false });
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : 'Failed to load memos',
+        isLoading: false 
+      });
+    }
+  },
+
+  loadCategoriesFromStorage: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      
+      // Import here to avoid circular dependencies
+      const { offlineCategoryService } = await import('../services/offlineCategoryService');
+      const categories = await offlineCategoryService.getCategories();
+      
+      set({ categories, isLoading: false });
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : 'Failed to load categories',
+        isLoading: false 
+      });
+    }
+  },
+
+  getSyncStatusInfo: async () => {
+    try {
+      // Import here to avoid circular dependencies
+      const [{ offlineMemoService }, { offlineCategoryService }] = await Promise.all([
+        import('../services/offlineMemoService'),
+        import('../services/offlineCategoryService'),
+      ]);
+      
+      const [memoStatus, categoryStatus] = await Promise.all([
+        offlineMemoService.getSyncStatus(),
+        offlineCategoryService.getSyncStatus(),
+      ]);
+
+      return {
+        memosPending: memoStatus.pendingCount,
+        categoriesPending: categoryStatus.pendingCount,
+        memosConflicts: memoStatus.conflictCount,
+        categoriesConflicts: categoryStatus.conflictCount,
+      };
+    } catch (error) {
+      console.error('Failed to get sync status:', error);
+      return {
+        memosPending: 0,
+        categoriesPending: 0,
+        memosConflicts: 0,
+        categoriesConflicts: 0,
+      };
+    }
   },
 }));

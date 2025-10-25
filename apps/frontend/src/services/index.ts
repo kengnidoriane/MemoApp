@@ -6,6 +6,8 @@ export { quizService } from './quizService';
 export { syncService } from './syncService';
 export { analyticsService } from './analyticsService';
 export { notificationService } from './notificationService';
+export { offlineMemoService } from './offlineMemoService';
+export { offlineCategoryService } from './offlineCategoryService';
 
 // Re-export types for convenience
 export type { ExportOptions } from './analyticsService';

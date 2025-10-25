@@ -252,5 +252,6 @@ export const CategoryCard = ({
         </motion.div>
       )}
     </Card>
+    </div>
   );
 };

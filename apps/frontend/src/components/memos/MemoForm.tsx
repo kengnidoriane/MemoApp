@@ -122,7 +122,7 @@ export const MemoForm = ({
             Category
           </label>
           <CategorySelect
-            value={watchedCategoryId}
+            value={watchedCategoryId || undefined}
             onChange={(categoryId) => setValue('categoryId', categoryId, { shouldDirty: true })}
             placeholder="Select a category..."
           />

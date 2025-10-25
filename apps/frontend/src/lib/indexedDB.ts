@@ -1,5 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import type { Memo, Category, User } from '@memo-app/shared';
+import type { Memo, Category } from '@memo-app/shared';
 
 // Define the database schema
 interface MemoAppDB extends DBSchema {
@@ -109,8 +109,24 @@ class IndexedDBManager {
 
     // If not synced, add to offline changes
     if (syncStatus === 'pending') {
-      await this.addOfflineChange('memo', 'update', memo);
+      const isNew = !memo.id || memo.id.startsWith('temp-');
+      await this.addOfflineChange('memo', isNew ? 'create' : 'update', memo);
     }
+  }
+
+  async createMemoOffline(memo: Omit<Memo, 'id' | 'createdAt' | 'updatedAt'>): Promise<Memo> {
+    const tempId = `temp-memo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const now = new Date();
+    
+    const newMemo: Memo = {
+      ...memo,
+      id: tempId,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    await this.saveMemo(newMemo, 'pending');
+    return newMemo;
   }
 
   async getMemo(id: string): Promise<(Memo & { syncStatus: string; lastModified: number }) | undefined> {
@@ -153,8 +169,27 @@ class IndexedDBManager {
     await this.db.put('categories', categoryWithMeta);
 
     if (syncStatus === 'pending') {
-      await this.addOfflineChange('category', 'update', category);
+      const isNew = !category.id || category.id.startsWith('temp-');
+      await this.addOfflineChange('category', isNew ? 'create' : 'update', category);
     }
+  }
+
+  async createCategoryOffline(category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>): Promise<Category> {
+    const tempId = `temp-category-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const now = new Date();
+    
+    const newCategory: Category = {
+      ...category,
+      id: tempId,
+      createdAt: now,
+      updatedAt: now,
+      memoCount: 0,
+      syncVersion: 0,
+      isDeleted: false,
+    };
+
+    await this.saveCategory(newCategory, 'pending');
+    return newCategory;
   }
 
   async getAllCategories(): Promise<(Category & { syncStatus: string; lastModified: number })[]> {
@@ -198,10 +233,10 @@ class IndexedDBManager {
     await this.db.clear('offlineChanges');
   }
 
-  async removeOfflineChange(id: string): Promise<void> {
+  async removeOfflineChange(changeId: string): Promise<void> {
     await this.init();
     if (!this.db) throw new Error('Database not initialized');
-    await this.db.delete('offlineChanges', id);
+    await this.db.delete('offlineChanges', changeId);
   }
 
   // User preferences
@@ -273,6 +308,101 @@ class IndexedDBManager {
       this.db.clear('userPreferences'),
       this.db.clear('syncMetadata'),
     ]);
+  }
+
+  // Enhanced offline queue management
+  async getOfflineChangesByEntity(entity: 'memo' | 'category'): Promise<any[]> {
+    await this.init();
+    if (!this.db) throw new Error('Database not initialized');
+    return this.db.getAllFromIndex('offlineChanges', 'by-entity', entity);
+  }
+
+  async getOfflineChangesByTimestamp(since?: number): Promise<any[]> {
+    await this.init();
+    if (!this.db) throw new Error('Database not initialized');
+    
+    if (since) {
+      const range = IDBKeyRange.lowerBound(since);
+      return this.db.getAllFromIndex('offlineChanges', 'by-timestamp', range);
+    }
+    
+    return this.db.getAll('offlineChanges');
+  }
+
+  async hasOfflineChanges(): Promise<boolean> {
+    await this.init();
+    if (!this.db) throw new Error('Database not initialized');
+    const count = await this.db.count('offlineChanges');
+    return count > 0;
+  }
+
+  async getConflictItems(): Promise<{ memos: any[]; categories: any[] }> {
+    await this.init();
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const [memos, categories] = await Promise.all([
+      this.db.getAllFromIndex('memos', 'by-sync-status', 'conflict'),
+      this.db.getAllFromIndex('categories', 'by-sync-status', 'conflict'),
+    ]);
+
+    return { memos, categories };
+  }
+
+  async resolveConflict(entity: 'memo' | 'category', id: string, resolvedData: any): Promise<void> {
+    await this.init();
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const store = entity === 'memo' ? 'memos' : 'categories';
+    const resolvedItem = {
+      ...resolvedData,
+      syncStatus: 'synced' as const,
+      lastModified: Date.now(),
+    };
+
+    await this.db.put(store as any, resolvedItem);
+  }
+
+  // Batch operations for better performance
+  async batchSaveMemos(memos: Memo[], syncStatus: 'synced' | 'pending' | 'conflict' = 'synced'): Promise<void> {
+    await this.init();
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const tx = this.db.transaction('memos', 'readwrite');
+    const store = tx.objectStore('memos');
+    
+    await Promise.all(
+      memos.map(memo => {
+        const memoWithMeta = {
+          ...memo,
+          syncStatus,
+          lastModified: Date.now(),
+        };
+        return store.put(memoWithMeta);
+      })
+    );
+    
+    await tx.done;
+  }
+
+  async batchSaveCategories(categories: Category[], syncStatus: 'synced' | 'pending' | 'conflict' = 'synced'): Promise<void> {
+    await this.init();
+    if (!this.db) throw new Error('Database not initialized');
+    
+    const tx = this.db.transaction('categories', 'readwrite');
+    const store = tx.objectStore('categories');
+    
+    await Promise.all(
+      categories.map(category => {
+        const categoryWithMeta = {
+          ...category,
+          syncStatus,
+          lastModified: Date.now(),
+        };
+        return store.put(categoryWithMeta);
+      })
+    );
+    
+    await tx.done;
   }
 }
 

@@ -2,8 +2,6 @@ import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from '@tansta
 import { memoService, type MemoSearchParams } from '../services/memoService';
 import { useMemoStore } from '../stores/memoStore';
 import type { 
-  Memo, 
-  CreateMemoRequest, 
   UpdateMemoRequest 
 } from '@memo-app/shared/types';
 

@@ -1,12 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { syncService } from '../services/syncService';
 import { useMemoStore } from '../stores/memoStore';
-import type { 
-  SyncRequest,
-  ConflictResolution,
-  BatchUpdateRequest,
-  OfflineChange 
-} from '@memo-app/shared/types';
+// import type { 
+//   SyncRequest,
+//   ConflictResolution,
+//   BatchUpdateRequest,
+//   OfflineChange 
+// } from '@memo-app/shared/types';
 
 // Query keys
 export const syncKeys = {

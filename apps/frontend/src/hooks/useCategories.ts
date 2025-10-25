@@ -2,8 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { categoryService } from '../services/categoryService';
 import { useMemoStore } from '../stores/memoStore';
 import type { 
-  Category, 
-  CreateCategoryRequest, 
   UpdateCategoryRequest 
 } from '@memo-app/shared/types';
 

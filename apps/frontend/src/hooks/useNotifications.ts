@@ -1,10 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notificationService } from '../services/notificationService';
 import { useAppStore } from '../stores/appStore';
-import type { 
-  NotificationPreferences,
-  PushSubscription 
-} from '@memo-app/shared/types';
 
 // Query keys
 export const notificationKeys = {
