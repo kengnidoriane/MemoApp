@@ -53,17 +53,59 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Request logging middleware
 app.use(requestLogger);
 
-// Health check endpoint
+// Health check endpoints
 app.get('/health', async (req, res) => {
-  const dbInfo = await getDatabaseInfo();
-  
-  res.status(200).json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development',
-    database: dbInfo,
-  });
+  try {
+    const dbInfo = await getDatabaseInfo();
+    const isDbConnected = await checkDatabaseConnection();
+    
+    const healthStatus = {
+      status: isDbConnected ? 'ok' : 'degraded',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || 'development',
+      version: '1.0.0',
+      database: {
+        ...dbInfo,
+        connected: isDbConnected,
+      },
+      memory: {
+        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+        external: Math.round(process.memoryUsage().external / 1024 / 1024),
+      },
+      services: {
+        email: EmailService.isInitialized(),
+        export: ExportService.isInitialized(),
+      },
+    };
+
+    res.status(isDbConnected ? 200 : 503).json(healthStatus);
+  } catch (error) {
+    res.status(503).json({
+      status: 'error',
+      timestamp: new Date().toISOString(),
+      error: 'Health check failed',
+    });
+  }
+});
+
+// API health check endpoint
+app.get('/api/health', async (req, res) => {
+  try {
+    const isDbConnected = await checkDatabaseConnection();
+    
+    res.status(isDbConnected ? 200 : 503).json({
+      status: isDbConnected ? 'healthy' : 'unhealthy',
+      timestamp: new Date().toISOString(),
+      database: isDbConnected,
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+    });
+  }
 });
 
 // API routes
