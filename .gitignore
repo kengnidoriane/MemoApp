@@ -152,7 +152,9 @@ dist/
 
 # Docker
 .dockerignore
-Dockerfile*
+
 
 # Prisma
 prisma/migrations/
+.env
+.env.production

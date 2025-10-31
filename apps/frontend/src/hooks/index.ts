@@ -12,3 +12,4 @@ export * from './useOfflineMemos';
 export * from './useOfflineCategories';
 export * from './useResponsive';
 export * from './useAccessibility';
+export * from './usePerformance';
